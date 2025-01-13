@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,12 +29,27 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tictactoe_v0.ui.theme.TicTacToe_v0Theme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.random.Random
+
+enum class Win{
+    PLAYER,
+    COMPUTER,
+    DRAW
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,16 +75,117 @@ fun TTTScreen() {
 
     //true - player's move, false - computer's move, null - no move
     val moves = remember {
-        mutableStateListOf<Boolean?>(null, true, null, null, false, null, null, null, null)
+        mutableStateListOf<Boolean?>(null, null, null, null, null, null, null, null, null)
+    }
+    val win = remember { mutableStateOf<Win?>(null) }
+
+    val onTap : (Offset) -> Unit = {
+        if(playerTurn.value && win.value == null){
+            val x = (it.x / 333).toInt()   //Dividing by 333 as offset returns value b/w 0 to 1000
+            val y = (it.y / 333).toInt()
+            val index = y * 3 + x
+            if(moves[index] == null) {
+                moves[index] = true
+                playerTurn.value = false
+                win.value = checkEndGame(moves)
+            }
+        }
     }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = "Tic Tac Toe", fontSize = 30.sp, modifier = Modifier.padding(16.dp))
         Header(playerTurn.value)
 
-        Board(moves)
+        Board(moves, onTap)
+
+        if(!playerTurn.value && win.value == null){
+            CircularProgressIndicator(color = Color.Red, modifier = Modifier.padding(16.dp))
+
+            val coroutineScope = rememberCoroutineScope()
+            LaunchedEffect(key1 = Unit){
+                coroutineScope.launch {
+                    delay(1500L)
+                    while(true){
+                        val i = Random.nextInt(9)
+                        if(moves[i] == null){
+                            moves[i] = false
+                            playerTurn.value = true
+                            win.value = checkEndGame(moves)
+                            break
+                        }
+                    }
+                }
+            }
+        }
+
+        if(win.value != null){
+            when(win.value){
+                Win.PLAYER -> {
+                    Text(text = "Player Wins", fontSize = 25.sp, modifier = Modifier.padding(16.dp))
+                }
+                Win.COMPUTER -> {
+                    Text(text = "Computer Wins", fontSize = 25.sp, modifier = Modifier.padding(16.dp))
+                }
+                Win.DRAW -> {
+                    Text(text = "Draw", fontSize = 25.sp, modifier = Modifier.padding(16.dp))
+                }
+                else -> {
+
+                }
+            }
+            Button(onClick = {
+                playerTurn.value = true
+                win.value = null
+                for(i in 0..8){
+                    moves[i] = null
+                }
+            }) {
+                Text(text = "Play Again")
+            }
+        }
     }
 
+}
+
+fun checkEndGame(m: List<Boolean?>): Win? {
+    var win: Win? = null
+    if (
+        (m[0] == m[1] && m[1] == m[2] && m[2] == true) ||
+        (m[3] == m[4] && m[4] == m[5] && m[3] == true) ||
+        (m[6] == m[7] && m[7] == m[8] && m[6] == true) ||
+        (m[0] == m[3] && m[3] == m[6] && m[0] == true) ||
+        (m[1] == m[4] && m[4] == m[7] && m[1] == true) ||
+        (m[2] == m[5] && m[5] == m[8] && m[2] == true) ||
+        (m[0] == m[4] && m[4] == m[8] && m[0] == true) ||
+        (m[2] == m[4] && m[4] == m[6] && m[2] == true)
+    ) {
+        win = Win.PLAYER
+    }
+    if (
+        (m[0] == m[1] && m[1] == m[2] && m[2] == false) ||
+        (m[3] == m[4] && m[4] == m[5] && m[3] == false) ||
+        (m[6] == m[7] && m[7] == m[8] && m[6] == false) ||
+        (m[0] == m[3] && m[3] == m[6] && m[0] == false) ||
+        (m[1] == m[4] && m[4] == m[7] && m[1] == false) ||
+        (m[2] == m[5] && m[5] == m[8] && m[2] == false) ||
+        (m[0] == m[4] && m[4] == m[8] && m[0] == false) ||
+        (m[2] == m[4] && m[4] == m[6] && m[2] == false)
+    ) {
+        win = Win.COMPUTER
+    }
+
+    if(win == null){
+        var available = false
+        for(i in 0..8){
+            if(m[i] == null){
+                available = true
+            }
+        }
+        if(!available){
+            win = Win.DRAW
+        }
+    }
+    return win
 }
 
 @Composable
@@ -108,12 +225,17 @@ fun Header(playerTurn: Boolean) {
 }
 
 @Composable
-fun Board(moves: List<Boolean?>) {
+fun Board(moves: List<Boolean?>, onTap: (Offset) -> Unit) {
     Box(
         modifier = Modifier
             .aspectRatio(1f)
             .padding(32.dp)
             .background(Color.LightGray)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = onTap
+                )
+            }
     ) {
         Column(verticalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxSize(1f)) {
             Row(
