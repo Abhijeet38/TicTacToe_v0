@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TTTScreen()
+                    MainScreen()
                 }
             }
         }
@@ -69,7 +69,40 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun TTTScreen() {
+fun MainScreen() {
+    val currentScreen = remember { mutableStateOf("landing") }
+
+    when (currentScreen.value) {
+        "landing" -> LandingPage(onStartGame = { currentScreen.value = "game" })
+        "game" -> TTTScreen(onExitGame = { currentScreen.value = "landing" })
+    }
+}
+
+@Composable
+fun LandingPage(onStartGame: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Welcome to Tic Tac Toe!",
+            fontSize = 30.sp,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(16.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = onStartGame) {
+            Text(text = "Start Game", fontSize = 20.sp)
+        }
+    }
+}
+
+
+@Composable
+fun TTTScreen(onExitGame: () -> Unit) {
     //true - player's turn, false - computer's turn
     val playerTurn = remember { mutableStateOf(true) }
 
@@ -112,16 +145,6 @@ fun TTTScreen() {
                     playerTurn.value = true
                     win.value = checkEndGame(moves)
 
-                    // RandomBot : Noob Level
-//                    while(true){
-//                        val i = Random.nextInt(9)
-//                        if(moves[i] == null){
-//                            moves[i] = false
-//                            playerTurn.value = true
-//                            win.value = checkEndGame(moves)
-//                            break
-//                        }
-//                    }
                 }
             }
         }
@@ -137,9 +160,7 @@ fun TTTScreen() {
                 Win.DRAW -> {
                     Text(text = "Draw", fontSize = 25.sp, modifier = Modifier.padding(16.dp))
                 }
-                else -> {
-
-                }
+                else -> {}
             }
             Button(onClick = {
                 playerTurn.value = true
@@ -150,6 +171,11 @@ fun TTTScreen() {
             }) {
                 Text(text = "Play Again")
             }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = onExitGame) {
+            Text(text = "Exit Game")
         }
     }
 
@@ -208,7 +234,6 @@ fun minimax(moves: List<Boolean?>, isMaximizing: Boolean): Int {
         return bestScore
     }
 }
-
 
 fun checkEndGame(m: List<Boolean?>): Win? {
     var win: Win? = null
@@ -370,5 +395,5 @@ fun getComposableFromMove(move: Boolean?) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewTTTScreen() {
-    TTTScreen()
+    MainScreen()
 }
