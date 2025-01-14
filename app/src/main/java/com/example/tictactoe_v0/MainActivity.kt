@@ -93,7 +93,7 @@ fun TTTScreen() {
     }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "Tic Tac Toe", fontSize = 30.sp, modifier = Modifier.padding(16.dp))
+        Text(text = "Tic Tac Toe", fontSize = 30.sp, modifier = Modifier.padding(top = 48.dp, bottom = 16.dp))
         Header(playerTurn.value)
 
         Board(moves, onTap)
