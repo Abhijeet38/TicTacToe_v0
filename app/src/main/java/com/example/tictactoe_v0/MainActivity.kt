@@ -105,15 +105,23 @@ fun TTTScreen() {
             LaunchedEffect(key1 = Unit){
                 coroutineScope.launch {
                     delay(1500L)
-                    while(true){
-                        val i = Random.nextInt(9)
-                        if(moves[i] == null){
-                            moves[i] = false
-                            playerTurn.value = true
-                            win.value = checkEndGame(moves)
-                            break
-                        }
-                    }
+
+                    // Minimax Algorithm : Pro Level : Undefeatable
+                    val computerMove = findBestMoveMinimax(moves)
+                    moves[computerMove] = false
+                    playerTurn.value = true
+                    win.value = checkEndGame(moves)
+
+                    // RandomBot : Noob Level
+//                    while(true){
+//                        val i = Random.nextInt(9)
+//                        if(moves[i] == null){
+//                            moves[i] = false
+//                            playerTurn.value = true
+//                            win.value = checkEndGame(moves)
+//                            break
+//                        }
+//                    }
                 }
             }
         }
@@ -146,6 +154,61 @@ fun TTTScreen() {
     }
 
 }
+
+fun findBestMoveMinimax(moves: List<Boolean?>): Int {
+    var bestScore = Int.MIN_VALUE
+    var move = -1
+
+    for (i in moves.indices) {
+        if (moves[i] == null) {
+            val tempMoves = moves.toMutableList()
+            tempMoves[i] = false // Computer's move
+            val score = minimax(tempMoves, false)
+            if (score > bestScore) {
+                bestScore = score
+                move = i
+            }
+        }
+    }
+
+    return move
+}
+
+fun minimax(moves: List<Boolean?>, isMaximizing: Boolean): Int {
+    val result = checkEndGame(moves)
+    if (result != null) {
+        return when (result) {
+            Win.PLAYER -> -10 // Player wins
+            Win.COMPUTER -> 10 // Computer wins
+            Win.DRAW -> 0 // Draw
+        }
+    }
+
+    if (isMaximizing) {
+        var bestScore = Int.MIN_VALUE
+        for (i in moves.indices) {
+            if (moves[i] == null) {
+                val tempMoves = moves.toMutableList()
+                tempMoves[i] = false // Computer's move
+                val score = minimax(tempMoves, false)
+                bestScore = maxOf(bestScore, score)
+            }
+        }
+        return bestScore
+    } else {
+        var bestScore = Int.MAX_VALUE
+        for (i in moves.indices) {
+            if (moves[i] == null) {
+                val tempMoves = moves.toMutableList()
+                tempMoves[i] = true // Player's move
+                val score = minimax(tempMoves, true)
+                bestScore = minOf(bestScore, score)
+            }
+        }
+        return bestScore
+    }
+}
+
 
 fun checkEndGame(m: List<Boolean?>): Win? {
     var win: Win? = null
