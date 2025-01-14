@@ -13,11 +13,15 @@ fun MainScreen() {
         "landing" -> LandingPage(
             onStartGame = { difficulty ->
                 selectedDifficulty.value = Difficulty.valueOf(difficulty)
-                currentScreen.value = "game" }
+                currentScreen.value = if(selectedDifficulty.value==Difficulty.HUMAN) "gameHuman" else "gameBot"
+            }
         )
-        "game" -> TTTScreen(
+        "gameBot" -> TTTScreen(
             onExitGame = { currentScreen.value = "landing" },
             difficulty = selectedDifficulty.value
+        )
+        "gameHuman" -> TTT2Screen(
+            onExitGame = { currentScreen.value = "landing" }
         )
     }
 }

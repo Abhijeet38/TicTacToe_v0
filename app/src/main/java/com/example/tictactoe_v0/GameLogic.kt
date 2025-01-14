@@ -8,7 +8,8 @@ enum class Win{
 
 enum class Difficulty{
     NOOB,
-    EXPERT
+    EXPERT,
+    HUMAN
 }
 
 fun findBestMoveMinimax(moves: List<Boolean?>): Int {

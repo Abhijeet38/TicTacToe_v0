@@ -44,8 +44,8 @@ fun LandingPage(onStartGame: (String) -> Unit) {
             painter = painterResource(id = R.drawable.game_logo),
             contentDescription = "Game Logo",
             modifier = Modifier
-                .height(200.dp)
-                .padding(32.dp),
+                .height(300.dp)
+                .padding(40.dp),
             contentScale = ContentScale.Fit
         )
 
@@ -77,6 +77,13 @@ fun LandingPage(onStartGame: (String) -> Unit) {
                     text = { Text("EXPERT") },
                     onClick = {
                         selectedMode.value = Difficulty.EXPERT
+                        expanded.value = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("HUMAN") },
+                    onClick = {
+                        selectedMode.value = Difficulty.HUMAN
                         expanded.value = false
                     }
                 )

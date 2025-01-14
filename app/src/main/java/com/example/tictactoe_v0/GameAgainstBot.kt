@@ -35,12 +35,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 @Composable
 fun TTTScreen(onExitGame: () -> Unit, difficulty: Difficulty) {
-    //true - player's turn, false - computer's turn
+    //true - player1's turn, false - computer's turn
 
-    val playerTurn = remember { mutableStateOf(true) }
+    val playerTurn = remember { mutableStateOf(Random.nextBoolean()) }
 
     //true - player's move, false - computer's move, null - no move
     val moves = remember {
@@ -55,7 +56,7 @@ fun TTTScreen(onExitGame: () -> Unit, difficulty: Difficulty) {
             val index = y * 3 + x
             if(moves[index] == null) {
                 moves[index] = true
-                playerTurn.value = false
+                playerTurn.value = !playerTurn.value
                 win.value = checkEndGame(moves)
             }
         }
@@ -79,11 +80,11 @@ fun TTTScreen(onExitGame: () -> Unit, difficulty: Difficulty) {
                     val computerMove = when(difficulty){
                         Difficulty.EXPERT -> findBestMoveMinimax(moves)
                         Difficulty.NOOB -> findRandomMove(moves)
+                        else -> -1
                     }
                     moves[computerMove] = false
                     playerTurn.value = true
                     win.value = checkEndGame(moves)
-
                 }
             }
         }
@@ -102,7 +103,7 @@ fun TTTScreen(onExitGame: () -> Unit, difficulty: Difficulty) {
                 else -> {}
             }
             Button(onClick = {
-                playerTurn.value = true
+                playerTurn.value = Random.nextBoolean()
                 win.value = null
                 for(i in 0..8){
                     moves[i] = null
