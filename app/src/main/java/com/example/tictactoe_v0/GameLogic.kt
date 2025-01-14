@@ -6,6 +6,11 @@ enum class Win{
     DRAW
 }
 
+enum class Difficulty{
+    NOOB,
+    EXPERT
+}
+
 fun findBestMoveMinimax(moves: List<Boolean?>): Int {
     var bestScore = Int.MIN_VALUE
     var move = -1
@@ -58,6 +63,11 @@ fun minimax(moves: List<Boolean?>, isMaximizing: Boolean): Int {
         }
         return bestScore
     }
+}
+
+fun findRandomMove(moves: List<Boolean?>): Int {
+    val emptyIndices = moves.indices.filter { moves[it] == null }
+    return emptyIndices.random()  // Selects a random index from empty spots
 }
 
 fun checkEndGame(m: List<Boolean?>): Win? {

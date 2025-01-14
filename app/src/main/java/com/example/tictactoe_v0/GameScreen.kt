@@ -37,8 +37,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun TTTScreen(onExitGame: () -> Unit) {
+fun TTTScreen(onExitGame: () -> Unit, difficulty: Difficulty) {
     //true - player's turn, false - computer's turn
+
     val playerTurn = remember { mutableStateOf(true) }
 
     //true - player's move, false - computer's move, null - no move
@@ -74,8 +75,11 @@ fun TTTScreen(onExitGame: () -> Unit) {
                 coroutineScope.launch {
                     delay(1500L)
 
-                    // Minimax Algorithm : Pro Level : Undefeatable
-                    val computerMove = findBestMoveMinimax(moves)
+                    // Minimax Algorithm : EXPERT Level & Random Move : NOOB Level
+                    val computerMove = when(difficulty){
+                        Difficulty.EXPERT -> findBestMoveMinimax(moves)
+                        Difficulty.NOOB -> findRandomMove(moves)
+                    }
                     moves[computerMove] = false
                     playerTurn.value = true
                     win.value = checkEndGame(moves)
@@ -198,7 +202,7 @@ fun Board(moves: List<Boolean?>, onTap: (Offset) -> Unit) {
                 Row(modifier = Modifier.weight(1f)) {
                     for (j in 0..2) {
                         Column(modifier = Modifier.weight(1f)) {
-                            getComposableFromMove(move = moves[i * 3 + j])
+                            GetComposableFromMove(move = moves[i * 3 + j])
                         }
                     }
                 }
@@ -208,7 +212,7 @@ fun Board(moves: List<Boolean?>, onTap: (Offset) -> Unit) {
 }
 
 @Composable
-fun getComposableFromMove(move: Boolean?) {
+fun GetComposableFromMove(move: Boolean?) {
     when (move) {
         true -> Image(
             painter = painterResource(id = R.drawable.ic_x),
@@ -231,3 +235,4 @@ fun getComposableFromMove(move: Boolean?) {
         )
     }
 }
+
