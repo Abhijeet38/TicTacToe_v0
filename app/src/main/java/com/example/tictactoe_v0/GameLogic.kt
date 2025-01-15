@@ -1,17 +1,5 @@
 package com.example.tictactoe_v0
 
-enum class Win{
-    PLAYER,
-    COMPUTER,
-    DRAW
-}
-
-enum class Difficulty{
-    NOOB,
-    EXPERT,
-    HUMAN
-}
-
 fun findBestMoveMinimax(moves: List<Boolean?>): Int {
     var bestScore = Int.MIN_VALUE
     var move = -1

@@ -11,6 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.tictactoe_v0.ui.theme.TicTacToe_v0Theme
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,6 +30,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        // Initialize Firebase with persistence enabled
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
     }
 }
 

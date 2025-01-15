@@ -20,7 +20,7 @@ fun MainScreen() {
             onExitGame = { currentScreen.value = "landing" },
             difficulty = selectedDifficulty.value
         )
-        "gameHuman" -> TTT2Screen(
+        "gameHuman" -> TTT3Screen(
             onExitGame = { currentScreen.value = "landing" }
         )
     }

@@ -30,7 +30,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
@@ -49,12 +51,12 @@ fun TTTScreen(onExitGame: () -> Unit, difficulty: Difficulty) {
     }
     val win = remember { mutableStateOf<Win?>(null) }
 
-    val onTap : (Offset) -> Unit = {
-        if(playerTurn.value && win.value == null){
-            val x = (it.x / 333).toInt()   //Dividing by 333 as offset returns value b/w 0 to 1000
-            val y = (it.y / 333).toInt()
+    val onTap: (Offset, Int, Int) -> Unit = { offset, boardWidth, boardHeight ->
+        if (playerTurn.value && win.value == null) {
+            val x = (offset.x / (boardWidth / 3)).toInt()
+            val y = (offset.y / (boardHeight / 3)).toInt()
             val index = y * 3 + x
-            if(moves[index] == null) {
+            if (moves[index] == null) {
                 moves[index] = true
                 playerTurn.value = !playerTurn.value
                 win.value = checkEndGame(moves)
@@ -156,84 +158,3 @@ fun Header(playerTurn: Boolean) {
         }
     }
 }
-
-@Composable
-fun Board(moves: List<Boolean?>, onTap: (Offset) -> Unit) {
-    Box(
-        modifier = Modifier
-            .aspectRatio(1f)
-            .padding(32.dp)
-            .background(Color.LightGray)
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = onTap
-                )
-            }
-    ) {
-        Column(verticalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxSize(1f)) {
-            Row(
-                modifier = Modifier
-                    .height(2.dp)
-                    .fillMaxWidth(1f)
-                    .background(Color.Black)
-            ) {}
-            Row(
-                modifier = Modifier
-                    .height(2.dp)
-                    .fillMaxWidth(1f)
-                    .background(Color.Black)
-            ) {}
-        }
-        Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxSize(1f)) {
-            Column(
-                modifier = Modifier
-                    .width(2.dp)
-                    .fillMaxHeight(1f)
-                    .background(Color.Black)
-            ) {}
-            Column(
-                modifier = Modifier
-                    .width(2.dp)
-                    .fillMaxHeight(1f)
-                    .background(Color.Black)
-            ) {}
-        }
-        Column(modifier = Modifier.fillMaxSize(1f)) {
-            for (i in 0..2) {
-                Row(modifier = Modifier.weight(1f)) {
-                    for (j in 0..2) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            GetComposableFromMove(move = moves[i * 3 + j])
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun GetComposableFromMove(move: Boolean?) {
-    when (move) {
-        true -> Image(
-            painter = painterResource(id = R.drawable.ic_x),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(1f),
-            colorFilter = ColorFilter.tint(Color.Blue)
-        )
-
-        false -> Image(
-            painter = painterResource(id = R.drawable.ic_o),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(1f),
-            colorFilter = ColorFilter.tint(Color.Red)
-        )
-
-        null -> Image(
-            painter = painterResource(id = R.drawable.ic_null),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(1f)
-        )
-    }
-}
-

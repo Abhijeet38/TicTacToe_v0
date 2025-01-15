@@ -35,22 +35,22 @@ fun TTT2Screen(onExitGame: () -> Unit) {
     }
     val win = remember { mutableStateOf<Win?>(null) }
 
-    val onTap : (Offset) -> Unit = {
-        if(playerTurn.value && win.value == null){
-            val x = (it.x / 333).toInt()   //Dividing by 333 as offset returns value b/w 0 to 1000
-            val y = (it.y / 333).toInt()
+    val onTap: (Offset, Int, Int) -> Unit = { offset, boardWidth, boardHeight ->
+        if (playerTurn.value && win.value == null) {
+            val x = (offset.x / (boardWidth / 3)).toInt()
+            val y = (offset.y / (boardHeight / 3)).toInt()
             val index = y * 3 + x
-            if(moves[index] == null) {
+            if (moves[index] == null) {
                 moves[index] = true
                 playerTurn.value = false
                 win.value = checkEndGame(moves)
             }
         }
-        if(!playerTurn.value && win.value == null){
-            val x = (it.x / 333).toInt()
-            val y = (it.y / 333).toInt()
+        if (!playerTurn.value && win.value == null) {
+            val x = (offset.x / (boardWidth / 3)).toInt()
+            val y = (offset.y / (boardHeight / 3)).toInt()
             val index = y * 3 + x
-            if(moves[index] == null) {
+            if (moves[index] == null) {
                 moves[index] = false
                 playerTurn.value = true
                 win.value = checkEndGame(moves)
