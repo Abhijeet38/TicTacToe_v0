@@ -31,27 +31,27 @@ fun TTT2Screen(onExitGame: () -> Unit) {
 
     //true - player's move, false - computer's move, null - no move
     val moves = remember {
-        mutableStateListOf<Boolean?>(null, null, null, null, null, null, null, null, null)
+        mutableStateListOf<Int>(-1,-1,-1,-1,-1,-1,-1,-1,-1)
     }
-    val win = remember { mutableStateOf<Win?>(null) }
+    val win = remember { mutableStateOf<Int>(-1) }
 
     val onTap: (Offset, Int, Int) -> Unit = { offset, boardWidth, boardHeight ->
-        if (playerTurn.value && win.value == null) {
+        if (playerTurn.value && win.value == -1) {
             val x = (offset.x / (boardWidth / 3)).toInt()
             val y = (offset.y / (boardHeight / 3)).toInt()
             val index = y * 3 + x
-            if (moves[index] == null) {
-                moves[index] = true
+            if (moves[index] == -1) {
+                moves[index] = 0
                 playerTurn.value = false
                 win.value = checkEndGame(moves)
             }
         }
-        if (!playerTurn.value && win.value == null) {
+        if (!playerTurn.value && win.value == -1) {
             val x = (offset.x / (boardWidth / 3)).toInt()
             val y = (offset.y / (boardHeight / 3)).toInt()
             val index = y * 3 + x
-            if (moves[index] == null) {
-                moves[index] = false
+            if (moves[index] == -1) {
+                moves[index] = 1
                 playerTurn.value = true
                 win.value = checkEndGame(moves)
             }
@@ -65,24 +65,24 @@ fun TTT2Screen(onExitGame: () -> Unit) {
         Board(moves, onTap)
 
 
-        if(win.value != null){
+        if(win.value != -1){
             when(win.value){
-                Win.PLAYER -> {
+                0 -> {
                     Text(text = "Player-1 Wins", fontSize = 25.sp, modifier = Modifier.padding(16.dp))
                 }
-                Win.COMPUTER -> {
+                1 -> {
                     Text(text = "Player-2 Wins", fontSize = 25.sp, modifier = Modifier.padding(16.dp))
                 }
-                Win.DRAW -> {
+                2 -> {
                     Text(text = "Draw", fontSize = 25.sp, modifier = Modifier.padding(16.dp))
                 }
                 else -> {}
             }
             Button(onClick = {
                 playerTurn.value = Random.nextBoolean()
-                win.value = null
+                win.value = -1
                 for(i in 0..8){
-                    moves[i] = null
+                    moves[i] = -1
                 }
             }) {
                 Text(text = "Play Again")

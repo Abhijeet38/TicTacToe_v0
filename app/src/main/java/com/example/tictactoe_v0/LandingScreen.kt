@@ -27,11 +27,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun LandingPage(onStartGame: (String) -> Unit) {
+fun LandingPage(onStartGame: (String) -> Unit, onCreateRoom: () -> Unit, onJoinRoom: () -> Unit) {
 
     val expanded = remember { mutableStateOf(false) }
     val selectedMode = remember { mutableStateOf<Difficulty?>(null) }
     val showMessage = remember { mutableStateOf(false) }
+    val onlineModeSelected = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -71,6 +72,7 @@ fun LandingPage(onStartGame: (String) -> Unit) {
                     onClick = {
                         selectedMode.value = Difficulty.NOOB
                         expanded.value = false
+                        onlineModeSelected.value = false
                     }
                 )
                 DropdownMenuItem(
@@ -78,6 +80,7 @@ fun LandingPage(onStartGame: (String) -> Unit) {
                     onClick = {
                         selectedMode.value = Difficulty.EXPERT
                         expanded.value = false
+                        onlineModeSelected.value = false
                     }
                 )
                 DropdownMenuItem(
@@ -85,6 +88,15 @@ fun LandingPage(onStartGame: (String) -> Unit) {
                     onClick = {
                         selectedMode.value = Difficulty.HUMAN
                         expanded.value = false
+                        onlineModeSelected.value = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("ONLINE") },
+                    onClick = {
+                        selectedMode.value = Difficulty.ONLINE
+                        expanded.value = false
+                        onlineModeSelected.value = true
                     }
                 )
             }
@@ -102,17 +114,27 @@ fun LandingPage(onStartGame: (String) -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Start Game Button
-        Button(onClick = {
-            if (selectedMode.value == null) {
-                showMessage.value = true  // Show message if no mode selected
-            } else {
-                val mode = selectedMode.value.toString()
-                showMessage.value = false
-                onStartGame(mode)
+        if (onlineModeSelected.value) {
+            Button(onClick = onCreateRoom) {
+                Text(text = "Create Room", fontSize = 20.sp)
             }
-        }) {
-            Text(text = "Start Game", fontSize = 20.sp)
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = onJoinRoom) {
+                Text(text = "Join Room", fontSize = 20.sp)
+            }
+        } else {
+            Button(onClick = {
+                if (selectedMode.value == null) {
+                    showMessage.value = true
+                } else {
+                    val mode = selectedMode.value.toString()
+                    showMessage.value = false
+                    onStartGame(mode)
+                }
+            }) {
+                Text(text = "Start Game", fontSize = 20.sp)
+            }
         }
+
     }
 }

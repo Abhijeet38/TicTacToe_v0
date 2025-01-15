@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Board(moves: List<Boolean?>, onTap: (Offset,Int,Int) -> Unit) {
+fun Board(moves: List<Int>, onTap: (Offset,Int,Int) -> Unit) {
     val boardWidth = remember { mutableStateOf(0) }
     val boardHeight = remember { mutableStateOf(0) }
     Box(
@@ -89,23 +89,23 @@ fun Board(moves: List<Boolean?>, onTap: (Offset,Int,Int) -> Unit) {
 }
 
 @Composable
-fun GetComposableFromMove(move: Boolean?) {
+fun GetComposableFromMove(move: Int) {
     when (move) {
-        true -> Image(
+        0 -> Image(
             painter = painterResource(id = R.drawable.ic_x),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(1f),
             colorFilter = ColorFilter.tint(Color.Blue)
         )
 
-        false -> Image(
+        1 -> Image(
             painter = painterResource(id = R.drawable.ic_o),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(1f),
             colorFilter = ColorFilter.tint(Color.Red)
         )
 
-        null -> Image(
+        -1 -> Image(
             painter = painterResource(id = R.drawable.ic_null),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(1f)

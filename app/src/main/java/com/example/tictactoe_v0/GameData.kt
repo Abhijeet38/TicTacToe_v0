@@ -3,17 +3,25 @@ package com.example.tictactoe_v0
 enum class Difficulty{
     NOOB,
     EXPERT,
-    HUMAN
+    HUMAN,
+    ONLINE
 }
 
-enum class Win{
-    PLAYER,
-    COMPUTER,
-    DRAW
-}
+//enum class Win{
+//    PLAYER,
+//    COMPUTER,
+//    DRAW
+//}
 
 data class GameState(
-    val moves: List<Boolean?> = List(9) { null },
+    val moves: List<Int> = List(9) { -1 },
     val playerTurn: Boolean = true,
-    val win: Win? = null
+    val win: Int = -1
+)
+
+data class GameStateOnline(
+    val moves: List<Int> = List(9) { -1 },
+    val win: Int = -1,
+    val hostTurn: Boolean = true,
+    val guestTurn: Boolean = false
 )

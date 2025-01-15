@@ -3,12 +3,17 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
-//    alias(libs.plugins.google.gms.google.services) apply false
-    id("com.google.gms.google-services") version "4.4.2" apply false
+    alias(libs.plugins.google.gms.google.services) apply false
+//    id("com.google.gms.google-services") version "4.4.2" apply false
 }
 
 buildscript {
+    repositories {
+        google()  // This is necessary to fetch dependencies from Google repositories
+        mavenCentral()
+    }
     dependencies {
-        classpath("com.google.gms:google-services:4.4.2")
+        // Add this line
+        classpath ("com.google.gms:google-services:4.4.2")
     }
 }
